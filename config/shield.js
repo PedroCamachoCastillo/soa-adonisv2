@@ -6,7 +6,7 @@ module.exports = {
   | Content Security Policy
   |--------------------------------------------------------------------------
   |
-  | Content security policy filters out the origins not allowed to execute
+  | Contentcaldo security policy filters out the origins not allowed to execute
   | and load resources like scripts, styles and fonts. There are wide
   | variety of options to choose from.
   */
