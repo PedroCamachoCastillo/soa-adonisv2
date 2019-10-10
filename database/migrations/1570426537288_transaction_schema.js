@@ -12,6 +12,7 @@ class TransactionSchema extends Schema {
       table.integer('type').notNullable()
       table.integer('quantity')
       table.text('description')
+      table.timestamps()
     })
   }
 
