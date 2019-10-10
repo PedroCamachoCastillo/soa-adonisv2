@@ -3,6 +3,7 @@
 const Sale = use('App/Models/Sale');
 const Inventory = use('App/Models/Inventory');
 const Transaction = use('App/Models/Transaction');
+const User = use('App/Models/User');
 
 class SaleController {
 
@@ -21,12 +22,13 @@ class SaleController {
             paymenth_method,
             description
         } = request.all();
-        const inventory = Inventory.find(inventory_id);
-        if( inventory.quantity >= quantity){
-            quantityRest = inventory.quantity - quantity;
+        const inventory = await Inventory.find(inventory_id);
+        const existencias = await inventory.quantity
+        if( existencias >= quantity){
+            const quantityRest = existencias - quantity;
             //Restamos existencias
             inventory.quantity = quantityRest;
-            inventory.save();
+            await inventory.save();
             const user = auth.getUser();
             const user_id = user.id;
             // Creamos una venta
@@ -40,7 +42,7 @@ class SaleController {
                 status, 
                 paymenth_method
             });
-            await user.sales().save(sale);
+            sale.save();
             // Creamos una transaccion
             const transaction = new Transaction();
             transaction.fill({
@@ -48,7 +50,7 @@ class SaleController {
                 quantity,
                 description
             });
-            await inventory.transaction().save(transaction);
+            await inventory.transactions().save(transaction);
             return sale;
         }else{
             return "Error en venta, productos insuficientes...";
@@ -66,12 +68,12 @@ class SaleController {
             paymenth_method,
             description
         } = request.all();
-        const inventory = Inventory.find(inventory_id);
+        const inventory = await Inventory.find(inventory_id);
+        const quantityRest = await inventory.quantity - quantity;
         if( inventory.quantity >= quantity){
-            quantityRest = inventory.quantity - quantity;
             //Restamos existencias
             inventory.quantity = quantityRest;
-            inventory.save();
+            await inventory.save();
             const user = User.find(user_id);
             // Creamos una venta
             const sale = new Sale();
@@ -84,7 +86,7 @@ class SaleController {
                 status, 
                 paymenth_method
             });
-            await user.sales().save(sale);
+            await sale.save();
             // Creamos una transaccion
             const transaction = new Transaction();
             transaction.fill({
@@ -92,7 +94,7 @@ class SaleController {
                 quantity,
                 description
             });
-            await inventory.transaction().save(transaction);
+            await inventory.transactions().save(transaction);
             return sale;
         }else{
             return "Cantidad insuficiente de recursos..."
@@ -101,14 +103,18 @@ class SaleController {
 
     async update({ params, request }){
         const { id } = params;
+        const { discount, total, status, paymenth_method } = request.all();
         const sale = await Sale.find(id);
-        const inventory = Inventory.find(sale.inventory_id)
+        const inventory = await Inventory.find(sale.inventory_id)
         if(sale.status == 'success'){
             const status = 'success';
         }else{
             const status = 'cancel';
         }
-        sale.merge(request.only('discount', 'total', 'status', 'paymenth_method'));
+        sale.discount = discount;
+        sale.total = total;
+        sale.status = status;
+        sale.paymenth_method = paymenth_method;
         if(status == 'success'){
             if(sale.status == 'cancel'){
                 inventory.quantity = inventory.quantity + sale.quantity;

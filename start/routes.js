@@ -31,7 +31,7 @@ Route.group(() =>{
     // CRUD de Transaccion
     Route.get('ListTransaction', 'TransactionController.index')
     Route.post('CreateTransaction', 'TransactionController.create')
-    Route.patch('SubstracTransaction/:id', 'TransactionController.update')
+    //Route.patch('SubstracTransaction/:id', 'TransactionController.update')
     Route.delete('RemoveTransaction/:id', 'TransactionController.destroy')
     // CRUD de Ventas, no se borran, se cambian de estado
     Route.get('ListSale', 'SaleController.index')

@@ -11,6 +11,7 @@ class ProductSchema extends Schema {
       table.string('name', 150).notNullable()
       table.text('description')
       table.string('image', 150)
+      table.timestamps()
     })
   }
 

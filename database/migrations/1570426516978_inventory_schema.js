@@ -12,6 +12,7 @@ class InventorySchema extends Schema {
       table.integer('quantity')
       table.float('price', 10)
       table.float('tax', 10)
+      table.timestamps()
     })
   }
 

@@ -12,9 +12,9 @@ class SaleSchema extends Schema {
       table.integer('quantity')
       table.float('discount', 10)
       table.float('total', 10)
-      table.timestamps('date')
       table.integer('status')
       table.integer('paymenth_method')
+      table.timestamps()
     })
   }
 

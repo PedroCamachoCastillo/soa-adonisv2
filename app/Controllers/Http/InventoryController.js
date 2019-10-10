@@ -2,6 +2,7 @@
 
 const Inventory = use('App/Models/Inventory');
 const Transaction = use('App/Models/Transaction');
+const User = use('App/Models/User');
 
 class InventoryController {
 
@@ -34,25 +35,29 @@ class InventoryController {
             quantity,
             description
         });
-        await inventory.transaction().save(transaction);
+        await inventory.transactions().save(transaction);
         return inventory;
     }
 
     async update({ params, request }){
         const { id } = params;
+        const { user_id, price, tax } = request.all();
         const inventory = await Inventory.find(id);
-        inventory.merge(request.only('user_id', 'price', 'tax'));
+        inventory.user_id = user_id;
+        inventory.price = price;
+        inventory.tax = tax;
         await inventory.save();
         return inventory;
     }
 
     async destroy({ auth, request, params }){
         const { id } = params;
+        const inventory_id = id;
         const { description } = request.all();
         const inventory = await Inventory.find(id);
         const transaction = new Transaction();
         transaction.fill({
-            id,
+            inventory_id,
             type: 3,
             quantity: inventory.quantity,
             description

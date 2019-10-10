@@ -10,15 +10,16 @@ class TransactionController {
         return transactions;
     }
 
-    async create({ auth }){
+    async create({ auth, request }){
         const { inventory_id, type, quantity, description } = request.all();
-        const inventory = Inventory.find(inventory_id);
+        const inventory = await Inventory.find(inventory_id);
+        const add = await inventory.quantity;
         if(type == 1){
-            inventory.quantity = quantity;
-            inventory.save();
+            inventory.quantity = quantity + add;
+            await inventory.save();
             const transaction = new Transaction();
             transaction.fill({
-                inventory_id, 
+                inventory_id,
                 type, 
                 quantity, 
                 description
@@ -28,8 +29,8 @@ class TransactionController {
         }
         if(type == 2){
             if(inventory.quantity >= quantity){
-                inventory.quantity = inventory.quantity - quantity;
-                inventory.save();
+                inventory.quantity = add - quantity;
+                await inventory.save();
                 const transaction = new Transaction();
                 transaction.fill({
                     inventory_id, 
@@ -43,7 +44,7 @@ class TransactionController {
         }
         if(type == 3){
             if(inventory.quantity >= quantity){
-                inventory.quantity = inventory.quantity - quantity;
+                inventory.quantity = add - quantity;
                 inventory.save();
                 const transaction = new Transaction();
                 transaction.fill({
@@ -70,11 +71,9 @@ class TransactionController {
     async destroy({ auth, request, params }){
         const user = await auth.getUser();
         const { id } = params;
-        const inventory = await Inventory.find(id);
-        await inventory.delete();
-        return Response.json({
-            alert: "Se ha eliminado el inventario..."
-        });
+        const transaction = await Transaction.find(id);
+        await transaction.delete();
+        return "Se ha eliminado la transaccion...";
     }
 }
 
