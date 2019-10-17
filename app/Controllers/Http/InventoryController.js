@@ -10,14 +10,21 @@ class InventoryController {
     async index({ auth }){
         const user = await auth.getUser();
         const inventories = await user.inventories().fetch();
+        const fullInventories = [];
         for(const x=0 ; x < inventories.length; x++){
             const product = await Product.find(inventories[x].product_id);
-            inventories[x].code = product.code;
-            inventories[x].name = product.name;
-            inventories[x].description = product.description;
-            inventories[x].image = product.image;
+            fullInventories.push({
+                inventory_id: inventories[x].id,
+                name: product.name,
+                code: product.code,
+                description: product.description,
+                image: product.image,
+                quantity: inventories[x].quantity,
+                price: inventories[x].price,
+                tax: inventories[x].tax
+            });
         }
-        return inventories;
+        return fullInventories;
     }
 
     async create({ auth, request }){
