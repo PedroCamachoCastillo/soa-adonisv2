@@ -24,7 +24,7 @@ class InventoryController {
                 tax: inventories[x].tax
             });
         }
-        return fullInventories;
+        return inventories.length;
     }
 
     async create({ auth, request }){
