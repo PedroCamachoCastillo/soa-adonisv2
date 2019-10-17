@@ -2,13 +2,22 @@
 
 const Inventory = use('App/Models/Inventory');
 const Transaction = use('App/Models/Transaction');
+const Product = use('App/Models/Product');
 const User = use('App/Models/User');
 
 class InventoryController {
 
     async index({ auth }){
         const user = await auth.getUser();
-        return await user.inventories().fetch();
+        const inventories = await user.inventories().fetch();
+        for(x=0; x < inventories.length; x++){
+            const product = await Product.find(inventories[x].product_id);
+            inventories[x].code = product.code;
+            inventories[x].name = product.name;
+            inventories[x].description = product.description;
+            inventories[x].image = product.image;
+        }
+        return inventories;
     }
 
     async create({ auth, request }){
