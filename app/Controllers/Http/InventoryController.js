@@ -10,7 +10,7 @@ class InventoryController {
     async index({ auth }){
         const user = await auth.getUser();
         const inventories = await user.inventories().fetch();
-        for(x=0; x < inventories.length; x++){
+        for(const x=0 ; x < inventories.length; x++){
             const product = await Product.find(inventories[x].product_id);
             inventories[x].code = product.code;
             inventories[x].name = product.name;
